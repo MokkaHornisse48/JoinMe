@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "joinme",
+  "version": "${version}",
+  "name": "JoinMe",
+  "description": "Zusammen spielen leicht gemacht",
+  "authors": [
+    "MokkaHornisse48"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/JoinMe/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "mod.mh48.joinme.client.JoinMeClient"
+    ],
+    "main": [
+      "mod.mh48.joinme.JoinMe"
+    ]
+  },
+  "mixins": [
+    "JoinMe.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.17",
+    "fabric": "*",
+    "minecraft": "1.18.2"
+  }
+}

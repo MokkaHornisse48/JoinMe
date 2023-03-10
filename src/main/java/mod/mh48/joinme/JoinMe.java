@@ -1,0 +1,13 @@
+package mod.mh48.joinme;
+
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
+
+public class JoinMe implements ModInitializer {
+    @Override
+    public void onInitialize() {
+
+    }
+}
