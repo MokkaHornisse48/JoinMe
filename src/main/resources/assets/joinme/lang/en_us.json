@@ -1,5 +1,7 @@
 {
   "mh48.joinme.menue.test": "JoinMe",
   "mh48.joinme.menue.connector" : "Connector Id Input",
-  "mh48.joinme.menue.publish" : "JoinMe"
+  "mh48.joinme.menue.publish" : "JoinMe",
+  "mh48.joinme.menue.openconnector" : "JoinMe",
+  "mh48.joinme.menue.openconnector.open" : "Open to JoinMe Network"
 }

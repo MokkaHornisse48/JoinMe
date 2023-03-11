@@ -1,9 +1,14 @@
 package mod.mh48.joinme.screens;
 
+import com.sun.jna.internal.ReflectionUtils;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
+import mod.mh48.signaling.client.ClientClient;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ConnectScreen;
 import net.minecraft.client.gui.screen.DirectConnectScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
+import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -11,6 +16,8 @@ import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+
+import java.lang.reflect.Field;
 
 public class JoinMeConnectorScreen extends Screen {
     private final Screen parent;
@@ -35,6 +42,8 @@ public class JoinMeConnectorScreen extends Screen {
         this.addSelectableChild(this.connectorIdField);
         this.connectButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96 + 18, 200, 20, new TranslatableText("selectServer.select"), button -> {
 
+            MultiplayerScreen multiplayerScreen = new MultiplayerScreen(parent);
+            P2PConnectScreen.connect(parent,this.client,this.connectorIdField.getText());
         }));
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 18, 200, 20, ScreenTexts.CANCEL, button -> {
             this.client.setScreen(this.parent);
