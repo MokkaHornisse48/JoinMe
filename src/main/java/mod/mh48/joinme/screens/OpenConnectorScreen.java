@@ -40,10 +40,8 @@ public class OpenConnectorScreen extends Screen {
             TranslatableText text = this.client.getServer().openToLan(this.gameMode, this.allowCommands, i) ? new TranslatableText("commands.publish.started", i) : new TranslatableText("commands.publish.failed");
             this.client.inGameHud.getChatHud().addMessage(text);
             this.client.updateWindowTitle();*/
-            ((ServerDuck)this.client.getServer()).test();
-            ((ServerDuck)this.client.getServer()).openToJoinMe(this.gameMode,this.allowCommands,id -> {
-                this.client.inGameHud.getChatHud().addMessage(new TranslatableText("commands.publish.started", id));
-            });
+            String id = ((ServerDuck) this.client.getServer()).openToJoinMe(this.gameMode, this.allowCommands);
+            this.client.inGameHud.getChatHud().addMessage(new TranslatableText("commands.publish.started", id));
             this.client.setScreen(null);
             this.client.updateWindowTitle();
         }));

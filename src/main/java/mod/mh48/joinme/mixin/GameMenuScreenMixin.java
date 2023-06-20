@@ -22,6 +22,10 @@ public abstract class GameMenuScreenMixin extends Screen {
 
     @Inject(at = @At("RETURN"),method = "init")
     private void onInit(CallbackInfo ci) {
-        ButtonWidget buttonWidget = this.addDrawableChild(new ButtonWidget(this.width / 2 + 4 + 102, this.height / 4 + 96 + -16, 98/2, 20, new TranslatableText("mh48.joinme.menue.publish"), button -> this.client.setScreen(new OpenConnectorScreen(this))));
+        ButtonWidget buttonWidget = this.addDrawableChild(
+                new ButtonWidget(this.width / 2 + 4 + 102, this.height / 4 + 96 + -16, 98/2, 20, new TranslatableText("mh48.joinme.menue.publish"),
+                        button ->
+                                this.client.setScreen(new OpenConnectorScreen(this))
+                ));
     }
 }

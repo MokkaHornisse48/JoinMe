@@ -22,8 +22,8 @@ dependencies {
 
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    implementation project(':Signaling')
-    include project(':Signaling')
+    implementation project(':p2p48')
+    include project(':p2p48')
 }
 
 processResources {

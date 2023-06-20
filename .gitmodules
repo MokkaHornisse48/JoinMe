@@ -1,3 +1,6 @@
 [submodule "Signaling"]
 	path = Signaling
 	url = https://github.com/MokkaHornisse48/Signaling.git
+[submodule "p2p48"]
+	path = p2p48
+	url = https://github.com/MokkaHornisse48/p2p48.git

@@ -3,18 +3,14 @@ package mod.mh48.joinme.screens;
 import com.mojang.logging.LogUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
-import io.netty.channel.epoll.Epoll;
-import io.netty.channel.epoll.EpollSocketChannel;
-import io.netty.channel.local.LocalAddress;
 import io.netty.channel.local.LocalChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.socket.oio.OioSocketChannel;
 import io.netty.handler.timeout.ReadTimeoutHandler;
+import mod.mh48.joinme.ReflectionUtils;
 import mod.mh48.joinme.mixin.MinecraftClientAccessor;
-import mod.mh48.signaling.client.ClientClient;
-import mod.mh48.signaling.client.P2PConnection;
+import mod.mh48.p2p48.Utils;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -26,14 +22,15 @@ import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Lazy;
 import net.minecraft.util.Util;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
+import java.lang.reflect.InvocationTargetException;
 import java.net.InetSocketAddress;
-import java.util.Optional;
+import java.net.Socket;
+import java.net.URI;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class P2PConnectScreen
@@ -74,13 +71,12 @@ public class P2PConnectScreen
                         return;
                     }
                     System.out.println("con 0");
-                    P2PConnection p2pConnection = ClientClient.createWEBRTC(id);
-                    LocalAddress address = p2pConnection.getAddressToConnect();
+                    Socket socket = Utils.connectToServer(new InetSocketAddress("185.213.25.234",12001),new URI("ws://185.213.25.234:27776"),id);
                     System.out.println("con 1");
                     if (P2PConnectScreen.this.connectingCancelled) {
                         return;
                     }
-                    P2PConnectScreen.this.connection = P2PConnectScreen.connect(address);
+                    P2PConnectScreen.this.connection = P2PConnectScreen.connect(new OioSocketChannel(socket));
                     ((MinecraftClientAccessor)P2PConnectScreen.this.client).setConnection(P2PConnectScreen.this.connection);
                     System.out.println("con 2");
                     P2PConnectScreen.this.connection.setPacketListener(new ClientLoginNetworkHandler(P2PConnectScreen.this.connection, client, P2PConnectScreen.this.parent, P2PConnectScreen.this::setStatus));
@@ -144,16 +140,26 @@ public class P2PConnectScreen
         super.render(matrices, mouseX, mouseY, delta);
     }
 
-    public static ClientConnection connect(LocalAddress address) {
+    public static ClientConnection connect(Channel channel) {
         NioEventLoopGroup lazy = ClientConnection.CLIENT_IO_GROUP.get();
         final ClientConnection clientConnection = new ClientConnection(NetworkSide.CLIENTBOUND);
-        new Bootstrap().group(lazy).handler(new ChannelInitializer<Channel>(){
+        Bootstrap bootstrap = new Bootstrap();
+        bootstrap.group(lazy).handler(new ChannelInitializer<Channel>(){
 
             @Override
             protected void initChannel(Channel channel) {
                 channel.pipeline().addLast("timeout", (ChannelHandler)new ReadTimeoutHandler(30)).addLast("splitter", (ChannelHandler)new SplitterHandler()).addLast("decoder", (ChannelHandler)new DecoderHandler(NetworkSide.CLIENTBOUND)).addLast("prepender", (ChannelHandler)new SizePrepender()).addLast("encoder", (ChannelHandler)new PacketEncoder(NetworkSide.SERVERBOUND)).addLast("packet_handler", (ChannelHandler)clientConnection);
             }
-        }).channel(LocalChannel.class).connect(address).syncUninterruptibly();
+        }).channel(LocalChannel.class);
+        //((AbstractBootstrapAccessor)bootstrap).init(channel);
+        try {
+            ReflectionUtils.initmethod.invoke(bootstrap,channel);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+        bootstrap.config().group().register(channel);
         return clientConnection;
     }
 }
